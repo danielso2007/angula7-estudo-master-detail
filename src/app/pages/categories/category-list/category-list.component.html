@@ -10,7 +10,7 @@
     <h1 class="h2 border-left pl-2">Categorias</h1>
   </div>
   <div class="col-md">
-    <a routerLink="new" class="btn btn-success float-right">+ Nova Categoria</a>
+    <button routerLink="new" class="btn btn-success float-right" [disabled]="action">+ Nova Categoria</button>
   </div>
 </div>
 
@@ -21,26 +21,17 @@
       <th style="width: 15%">Ações</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <td><strong>Lazer</strong><br/><small>Cinema, parque, praia, etc</small></td>
+  <tbody *ngIf="categories == null">
+      <tr colspan="2">
+        <td align="center"><i class="fa fa-refresh fa-spin fa-3x fa-fw"></i></td>
+      </tr>
+  </tbody>
+  <tbody *ngIf="categories !== null">
+    <tr *ngFor="let item of categories">
+      <td><strong>{{item.name}}</strong><br/><small>{{item.description}}</small></td>
       <td style="vertical-align: middle;">
-        <a [routerLink]="[12, 'edit']" class="btn btn-outline-info btn-sm mr-2">Editar</a>
-        <button (click)="alert('Excluir')" class="btn btn-outline-danger btn-sm">Excluir</button>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Lazer</strong><br/><small>Cinema, parque, praia, etc</small></td>
-      <td style="vertical-align: middle;">
-        <a [routerLink]="[12, 'edit']" class="btn btn-outline-info btn-sm mr-2">Editar</a>
-        <button (click)="alert('Excluir')" class="btn btn-outline-danger btn-sm">Excluir</button>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Lazer</strong><br/><small>Cinema, parque, praia, etc</small></td>
-      <td style="vertical-align: middle;">
-        <a [routerLink]="[12, 'edit']" class="btn btn-outline-info btn-sm mr-2">Editar</a>
-        <button (click)="alert('Excluir')" class="btn btn-outline-danger btn-sm">Excluir</button>
+        <button [routerLink]="[item.id, 'edit']" [disabled]="action" class="btn btn-outline-info btn-sm mr-2">Editar</button>
+        <button [disabled]="action" (click)="deleteCategory(item)" class="btn btn-outline-danger btn-sm"> <i *ngIf="action" class="fa fa-spinner fa-spin fa-1x fa-fw"> </i>Excluir</button>
       </td>
     </tr>
   </tbody>
