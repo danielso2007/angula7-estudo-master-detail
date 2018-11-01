@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment.prod';
 import { Category } from './category.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +18,7 @@ export class CategoryService {
     })
   };
 
-  private apiPath = 'api/categories';
+  private apiPath = environment.url_api + 'categories';
 
   constructor(private http: HttpClient) { }
 
