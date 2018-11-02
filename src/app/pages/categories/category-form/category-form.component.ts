@@ -4,6 +4,7 @@ import { Category } from '../shared/category.model';
 import { CategoryService } from '../shared/category.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
+import toastr from 'toastr';
 
 @Component({
   selector: 'app-category-form',
@@ -34,6 +35,55 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked {
 
   ngAfterContentChecked() {
     this.setPageTitle();
+  }
+
+  submitForm(): void {
+    this.submittingForm = true;
+    
+    if (this.currentAction === 'new') {
+      this.createCategory();
+    } else {
+      this.updateCategory();
+    }
+  }
+
+  private createCategory(): void {
+    const category: Category = Object.assign(new Category(), this.categoryForm.getRawValue());
+
+    this.categoryService.create(category)
+    .subscribe(
+      category => this.actionsForSuccess(category),
+      error => this.actionsForError(error)
+    );
+  }
+
+  private actionsForSuccess(category: Category) {
+    toastr.success('Solicitação processada com sucesso!');
+    this.router.navigateByUrl('categories', {skipLocationChange: true})
+        .then(
+            () => this.router.navigate(['categories', category.id, 'edit'])
+        );
+  }
+
+  private actionsForError(error: any) {
+    toastr.error('Erro na solicitaçao!');
+    console.error(error);
+    this.submittingForm = false;
+    if (error.status === 422) {
+      this.serverErrorMessages = JSON.parse(error._body).errors;
+    } else {
+      this.serverErrorMessages = ['Falha na comunicação com o servidor. Por favor, tente mais tarde.'];
+    }
+  }
+
+  private updateCategory(): void {
+    const category: Category = Object.assign(new Category(), this.categoryForm.getRawValue());
+
+    this.categoryService.update(category)
+    .subscribe(
+      category => this.actionsForSuccess(category),
+      error => this.actionsForError(error)
+    );
   }
 
   private setCurrentAction(): void {
@@ -68,7 +118,7 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked {
 
   private setPageTitle(): void {
     if (this.currentAction === 'new') {
-      this.pageTitle = 'Caadstro de Nova Categoria';
+      this.pageTitle = 'Cadastro de Nova Categoria';
     } else {
       const categoryName = this.category.name || '';
       this.pageTitle = 'Editando Categoria: ' + categoryName;
