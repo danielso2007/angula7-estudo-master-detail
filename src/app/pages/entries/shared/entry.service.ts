@@ -9,7 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class EntryServiceService {
+export class EntryService {
 
   private headersHttpOptions = {
     headers: new HttpHeaders({
@@ -60,12 +60,12 @@ export class EntryServiceService {
 
   private jsonDataToCategories(jsonData: any[]): Entry[] {
     const entries: Entry[] = [];
-    jsonData.forEach(element => entries.push(element as Entry));
+    jsonData.forEach(element => entries.push(Object.assign(new Entry(), element)));
     return entries;
   }
 
   private jsonDataToEntry(jsonData: any): Entry {
-    return jsonData as Entry;
+    return Object.assign(new Entry(), jsonData);
   }
 
   private handleError(error: any): Observable<any> {
