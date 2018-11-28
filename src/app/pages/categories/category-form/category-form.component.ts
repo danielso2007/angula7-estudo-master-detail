@@ -18,7 +18,7 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked {
   pageTitle: string;
   serverErrorMessages: string[] = null;
   submittingForm: boolean = false;
-  category: Category = new Category();
+  category: Category = null;
 
   constructor(
     private categoryService: CategoryService,
@@ -113,6 +113,8 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked {
         },
         (error) => alert('Ocorreu um erro no servidor')
       );
+    } else {
+      this.category = new Category();
     }
   }
 
@@ -120,7 +122,7 @@ export class CategoryFormComponent implements OnInit, AfterContentChecked {
     if (this.currentAction === 'new') {
       this.pageTitle = 'Cadastro de Nova Categoria';
     } else {
-      const categoryName = this.category.name || '';
+      const categoryName = this.category ? (this.category.name || '') : '';
       this.pageTitle = 'Editando Categoria: ' + categoryName;
     }
   }

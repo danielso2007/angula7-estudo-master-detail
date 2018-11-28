@@ -5,6 +5,8 @@ import { EntryService } from '../shared/entry.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import toastr from 'toastr';
+import { Category } from '../../categories/shared/category.model';
+import { CategoryService } from '../../categories/shared/category.service';
 
 @Component({
   selector: 'app-entry-form',
@@ -20,17 +22,41 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
   submittingForm: boolean = false;
   entry: Entry = null;
 
+  categories: Array<Category>;
+
+  imaskConfig = {
+    mask: Number,
+    scale: 2,
+    trousandsSeparator: '',
+    padFractionalZeros: true,
+    normalizeZeros: true,
+    radix: ','
+  }
+
+  ptBR = {
+    firstDayOfWeek: 0,
+    dayNames: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+    dayNamesShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+    dayNamesMin: ["Do","Se","Te","Qu","Qu","Se","Sa"],
+    monthNames: [ "Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro" ],
+    monthNamesShort: [ "Jan", "Fev", "Mar", "Abr", "Mai", "Jun","Jul", "Ago", "Set", "Out", "Nov", "Dez" ],
+    today: 'Hoje',
+    clear: 'Limpar'
+  }
+
   constructor(
     private entryService: EntryService,
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private categoryService: CategoryService
   ) { }
 
   ngOnInit() {
     this.setCurrentAction();
     this.buildEntryForm();
     this.loadEntry();
+    this.loadCategories();
   }
 
   ngAfterContentChecked() {
@@ -48,8 +74,8 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
   }
 
   private createEntry(): void {
+    this.entry = new Entry();
     const entry: Entry = Object.assign(new Entry(), this.entryForm.getRawValue());
-
     this.entryService.create(entry)
     .subscribe(
       entry => this.actionsForSuccess(entry),
@@ -78,7 +104,6 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
 
   private updateEntry(): void {
     const entry: Entry = Object.assign(new Entry(), this.entryForm.getRawValue());
-
     this.entryService.update(entry)
     .subscribe(
       entry => this.actionsForSuccess(entry),
@@ -99,10 +124,10 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
       id: [null],
       name: [null, [Validators.required, Validators.minLength(2)]],
       description: [null],
-      type: [null, [Validators.required]],
+      type: [Entry.types.expense, [Validators.required]],
       amount: [null, [Validators.required]],
       date: [null, [Validators.required]],
-      paid: [null, [Validators.required]],
+      paid: [true, [Validators.required]],
       categoryId: [null, [Validators.required]]
     });
   }
@@ -112,12 +137,15 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
       this.route.paramMap.pipe(
         switchMap(params => this.entryService.getById(Number(params.get('id'))))
       ).subscribe(
-        (entry) => {
+        (entry: Entry) => {
           this.entry = entry;
+          entry.date = new Date(entry.date);
           this.entryForm.patchValue(entry);
         },
         (error) => alert('Ocorreu um erro no servidor')
       );
+    } else {
+      this.entry = new Entry();
     }
   }
 
@@ -125,9 +153,26 @@ export class EntryFormComponent implements OnInit, AfterContentChecked {
     if (this.currentAction === 'new') {
       this.pageTitle = 'Cadastro de Novo Lançamento';
     } else {
-      const entryName = this.entry.name || '';
+      const entryName = this.entry ? (this.entry.name || '') : '';
       this.pageTitle = 'Editando Lançamento: ' + entryName;
     }
+  }
+
+  get typeOptions(): Array<any> {
+    return Object.entries(Entry.types).map(
+      ([value, text]) => {
+        return {
+          text: text,
+          value: value
+        }
+      }
+    );
+  }
+
+  private loadCategories(): void {
+    this.categoryService.getAll().subscribe(
+      categories => this.categories = categories
+    );
   }
 
 }

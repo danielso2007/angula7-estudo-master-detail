@@ -15,9 +15,9 @@ export class InMemoryDatabase implements InMemoryDbService {
     ];
 
     let entries: Entry[] = [
-      {id: 1, name: 'Gás de Cozinha', description: 'Gás', type: Entry.types.expense, amount: '70,52', date: '14/11/2018', paid: true, categoryId: categories[0].id, category: categories[0]} as Entry,
-      {id: 2, name: 'Suplementos', description: 'Suplementos diversos', type: Entry.types.renevue, amount: '85,90', date: '20/11/2018', paid: false, categoryId: categories[1].id, category: categories[1]} as Entry,
-      {id: 3, name: 'Salário de empresa XPTO', description: 'Salário da empresa', type: Entry.types.expense, amount: '1758,90', date: '25/11/2018', paid: true, categoryId: categories[2].id, category: categories[2]} as Entry,
+      Object.assign(new Entry(), {id: 1, name: 'Gás de Cozinha', description: 'Gás', type: Entry.types.expense, amount: '70,52', date: new Date(), paid: true, categoryId: categories[0].id, category: categories[0]}),
+      Object.assign(new Entry(), {id: 2, name: 'Suplementos', description: 'Suplementos diversos', type: Entry.types.renevue, amount: '85,90', date: new Date(), paid: false, categoryId: categories[1].id, category: categories[1]}),
+      Object.assign(new Entry(), {id: 3, name: 'Salário de empresa XPTO', description: 'Salário da empresa', type: Entry.types.expense, amount: '1758,90', date: new Date(), paid: true, categoryId: categories[2].id, category: categories[2]}),
     ];
 
     return { categories, entries };

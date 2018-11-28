@@ -26,7 +26,7 @@
   <tbody *ngIf="entries !== null">
     <tr *ngFor="let item of entries">
       <td><strong>{{item.name}}</strong><br/>
-        <small class="text-success">{{item.date}}</small><br/>
+        <small class="text-success">{{item.date | date:'dd/MM/yyyy'}}</small><br/>
         <small *ngIf="item.description">{{item.description}}</small>
       </td>
       <td style="vertical-align: middle;">{{ item.category.name }}</td>
