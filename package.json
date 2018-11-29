@@ -1,6 +1,6 @@
 {
   "name": "finansys",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,7 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "release": "standard-version",
-    "release_version": "standard-version release -- --release-as 0.1.0"
+    "release_version": "standard-version release -- --release-as 0.2.0"
   },
   "private": true,
   "dependencies": {
