@@ -57,17 +57,26 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
         );
     }
 
-    protected jsonDataToResources(jsonData: any[]): T[] {
-        const categories: T[] = [];
-        jsonData.forEach(element => categories.push(element as T));
-        return categories;
+    jsonDataToResources(jsonData: any[]): T[] {
+        const list: T[] = [];
+        try {
+            console.log(<T>{});
+            jsonData.forEach(element => list.push(Object.assign(<T>{}, element)));
+        } catch (erro) {
+            console.error(erro);
+        } 
+        return list;
     }
 
-    protected jsonDataToResource(jsonData: any): T {
-        return jsonData as T;
+    jsonDataToResource(jsonData: any): T {
+        try {
+            return Object.assign(<T>{}, jsonData);
+        } catch (erro) {
+            console.error(erro);
+        } 
     }
 
-    protected handleError(error: any): Observable<any> {
+    handleError(error: any): Observable<any> {
         console.error('ERRO NA REQUISIÇAO => ', error);
         return throwError(error);
     }
