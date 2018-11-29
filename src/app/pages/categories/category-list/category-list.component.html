@@ -7,7 +7,7 @@
 
 <div class="row mb-4">
   <div class="col-md">
-    <h1 class="h2 border-left pl-2">Categorias <i *ngIf="categories == null" class="fa fa-refresh fa-spin fa-1x fa-fw"></i></h1>
+    <h1 class="h2 border-left pl-2">Categorias <i *ngIf="action" class="fa fa-refresh fa-spin fa-1x fa-fw"></i></h1>
   </div>
   <div class="col-md">
     <button routerLink="new" class="btn btn-success float-right" [disabled]="action">+ Nova Categoria</button>
@@ -18,15 +18,15 @@
   <thead>
     <tr class="bg-primary text-light">
       <th>Categoria</th>
-      <th style="width: 15%">Ações</th>
+      <th style="width: 15%" class="text-center">Ações</th>
     </tr>
   </thead>
-  <tbody *ngIf="categories !== null">
-    <tr *ngFor="let item of categories">
+  <tbody *ngIf="resources !== null">
+    <tr *ngFor="let item of resources">
       <td><strong>{{item.name}}</strong><br/><small>{{item.description}}</small></td>
-      <td style="vertical-align: middle;">
+      <td style="vertical-align: middle;" class="text-center">
         <button [routerLink]="[item.id, 'edit']" [disabled]="action" class="btn btn-outline-info btn-sm mr-2">Editar</button>
-        <button [disabled]="action" (click)="deleteCategory(item)" class="btn btn-outline-danger btn-sm"> <i *ngIf="action" class="fa fa-spinner fa-spin fa-1x fa-fw"> </i>Excluir</button>
+        <button [disabled]="action" (click)="delete(item)" class="btn btn-outline-danger btn-sm"> <i *ngIf="action" class="fa fa-spinner fa-spin fa-1x fa-fw"> </i>Excluir</button>
       </td>
     </tr>
   </tbody>
