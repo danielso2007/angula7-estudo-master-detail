@@ -1,9 +1,7 @@
 import { environment } from './../../../../environments/environment';
 import { Entry } from './entry.model';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map, flatMap } from 'rxjs/operators';
+
 import { HttpHeaders } from '@angular/common/http';
 import { CategoryService } from '../../categories/shared/category.service';
 
