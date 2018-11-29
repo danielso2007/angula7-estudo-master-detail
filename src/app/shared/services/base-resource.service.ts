@@ -16,52 +16,59 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
 
     protected http: HttpClient;
 
-    constructor(protected injector: Injector, protected apiPath: string) {
+    constructor(protected injector: Injector, protected apiPath: string, protected testType: new () => T) {
         this.apiPath = environment.url_api + this.apiPath;
         this.http = this.injector.get(HttpClient);
     }
 
+    getNew() : T {
+        return new this.testType();
+    }
+
+    castObject(element: any): T {
+        return Object.assign(this.getNew(), element)
+    }
+
     getAll(): Observable<T[]> {
         return this.http.get(this.apiPath).pipe(
-            catchError(this.handleError),
-            map(this.jsonDataToResources)
+            map(this.jsonDataToResources.bind(this)), // Bind é necessário para passar a instância da classe, não o do map.
+            catchError(this.handleError)
         );
     }
 
     getById(id: number): Observable<T> {
         const url = `${this.apiPath}/${id}`;
         return this.http.get(url, this.headersHttpOptions).pipe(
-            catchError(this.handleError),
-            map(this.jsonDataToResource)
+            map(this.jsonDataToResource.bind(this)), // Bind é necessário para passar a instância da classe, não o do map.
+            catchError(this.handleError)
         );
     }
 
     create(category: T): Observable<T> {
         return this.http.post(this.apiPath, category, this.headersHttpOptions).pipe(
-            catchError(this.handleError),
-            map(this.jsonDataToResource)
+            map(this.jsonDataToResource.bind(this)), // Bind é necessário para passar a instância da classe, não o do map.
+            catchError(this.handleError)
         );
     }
 
     update(category: T): Observable<T> {
         return this.http.put(`${this.apiPath}/${category.id}`, category, this.headersHttpOptions).pipe(
-            catchError(this.handleError),
-            map(() => category)
+            map(() => category),
+            catchError(this.handleError)
         );
     }
 
     delete(id: number): Observable<any> {
         return this.http.delete(`${this.apiPath}/${id}`, this.headersHttpOptions).pipe(
-            catchError(this.handleError),
-            map(() => null)
+            map(() => null),
+            catchError(this.handleError)
         );
     }
 
     jsonDataToResources(jsonData: any[]): T[] {
         const list: T[] = [];
         try {
-            console.log(<T>{});
-            jsonData.forEach(element => list.push(Object.assign(<T>{}, element)));
+            jsonData.forEach(element => list.push(this.castObject(element)));
         } catch (erro) {
             console.error(erro);
         } 
@@ -70,7 +77,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
 
     jsonDataToResource(jsonData: any): T {
         try {
-            return Object.assign(<T>{}, jsonData);
+            return this.castObject(jsonData);
         } catch (erro) {
             console.error(erro);
         } 

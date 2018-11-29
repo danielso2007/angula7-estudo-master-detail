@@ -11,30 +11,27 @@ import { CategoryService } from '../../categories/shared/category.service';
 export class EntryService extends BaseResourceService<Entry> {
 
   constructor(protected injector: Injector, private categoryService: CategoryService) {
-    super(injector, 'entries');
+    super(injector, 'entries', Entry);
   }
 
   create(entry: Entry): Observable<Entry> {
-    return this.categoryService.getById(entry.categoryId)
-    .pipe(
-      flatMap(
-        category => {
-          entry.category = category;
-          return super.create(entry);
-        }
-      )
-    )
+    return this.setCategoryAndSendToServer(entry, super.create.bind(this));
   }
 
   update(entry: Entry): Observable<Entry> {
-    return this.categoryService.getById(entry.categoryId)
+    return this.setCategoryAndSendToServer(entry, super.update.bind(this));
+  }
+
+  private setCategoryAndSendToServer(object: Entry, fn: any): Observable<Entry> {
+    return this.categoryService.getById(object.categoryId)
     .pipe(
       flatMap(
         category => {
-          entry.category = category;
-          return super.update(entry);
+          object.category = category;
+          return fn(object);
         }
-      )
+      ),
+      catchError(this.handleError)
     )
   }
 
