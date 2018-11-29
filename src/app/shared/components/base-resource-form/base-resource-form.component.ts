@@ -103,6 +103,14 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
 
     protected abstract buildForm(): void;
 
+    protected afterLoad(resource: T): T {
+        return resource;
+    }
+
+    /**
+     * Ao atualizar o object, seta-lo novamente em:
+     * this.resourceForm.patchValue(resource);
+     */
     protected load(): void {
         this.action = true;
         this.resourceForm.disable();
@@ -112,7 +120,7 @@ export abstract class BaseResourceFormComponent<T extends BaseResourceModel> imp
             ).subscribe(
                 (resource) => {
                     this.resource = resource;
-                    this.resourceForm.patchValue(resource);
+                    this.resourceForm.patchValue(this.afterLoad(this.resource));
                     this.action = false;
                     this.resourceForm.enable();
                 },
