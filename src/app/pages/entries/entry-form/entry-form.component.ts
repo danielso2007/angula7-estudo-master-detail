@@ -13,6 +13,8 @@ import { BaseResourceFormComponent } from 'src/app/shared/components/base-resour
 })
 export class EntryFormComponent extends BaseResourceFormComponent<Entry> {
 
+  pageTitle = 'Cadastro de novo lançamento';
+
   categories: Array<Category>;
 
   imaskConfig = {

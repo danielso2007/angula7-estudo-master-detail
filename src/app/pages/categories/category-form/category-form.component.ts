@@ -11,6 +11,8 @@ import { BaseResourceFormComponent } from 'src/app/shared/components/base-resour
 })
 export class CategoryFormComponent extends BaseResourceFormComponent<Category> {
 
+  pageTitle = 'Cadastro de nova categoria';
+
   constructor(
     protected categoryService: CategoryService,
     protected injector: Injector

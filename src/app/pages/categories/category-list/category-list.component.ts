@@ -10,6 +10,8 @@ import { BaseListComponent } from 'src/app/shared/components/base-resource-list/
 })
 export class CategoryListComponent extends BaseListComponent<Category> {
 
+  pageTitle = 'Categorias';
+
   constructor(protected categoryService: CategoryService) {
     super(categoryService);
   }

@@ -1,13 +1,8 @@
-<nav class="mb-5">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-    <li class="breadcrumb-item active">Lançamentos</li>
-  </ol>
-</nav>
+<app-bread-crumb [items]="[{text: pageTitle}]"></app-bread-crumb>
 
 <div class="row mb-4">
   <div class="col-md">
-    <h1 class="h2 border-left pl-2">Lançamentos <i *ngIf="entries == null" class="fa fa-refresh fa-spin fa-1x fa-fw"></i></h1> 
+    <h1 class="h2 border-left pl-2">{{pageTitle}} <i *ngIf="action" class="fa fa-refresh fa-spin fa-1x fa-fw"></i></h1> 
   </div>
   <div class="col-md">
     <button routerLink="new" class="btn btn-success float-right" [disabled]="action">+ Novo Lançamento</button>
@@ -23,8 +18,8 @@
       <th style="width: 15%" class="text-center">Ações</th>
     </tr>
   </thead>
-  <tbody *ngIf="entries !== null">
-    <tr *ngFor="let item of entries">
+  <tbody *ngIf="resources !== null">
+    <tr *ngFor="let item of resources">
       <td><strong>{{item.name}}</strong><br/>
         <small class="text-success">{{item.date | date:'dd/MM/yyyy'}}</small><br/>
         <small *ngIf="item.description">{{item.description}}</small>
