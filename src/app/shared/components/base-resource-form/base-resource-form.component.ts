@@ -1,7 +1,5 @@
 import { Component, OnInit, AfterContentChecked, Injector } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { T } from '../shared/resource.model';
-import { TService } from '../shared/resource.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import toastr from 'toastr';
@@ -13,13 +11,14 @@ import { BaseResourceService } from '../../services/base-resource.service';
   templateUrl: './resource-form.component.html',
   styleUrls: ['./resource-form.component.css']
 })
-export class TFormComponent<T extends BaseResourceModel> implements OnInit, AfterContentChecked {
+export abstract class TFormComponent<T extends BaseResourceModel> implements OnInit, AfterContentChecked {
 
   currentAction: string;
   resourceForm: FormGroup;
   pageTitle: string;
   serverErrorMessages: string[] = null;
   submittingForm: boolean = false;
+  action: boolean = false;
 
   protected route: ActivatedRoute;
   protected router: Router;
@@ -38,8 +37,8 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
 
   ngOnInit() {
     this.setCurrentAction();
-    this.buildTForm();
-    this.loadT();
+    this.buildForm();
+    this.load();
   }
 
   ngAfterContentChecked() {
@@ -56,7 +55,7 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
     }
   }
 
-  private create(): void {
+  protected create(): void {
     const resource: T = this.resourceService.castObject(this.resourceForm.getRawValue());
 
     this.resourceService.create(resource)
@@ -66,15 +65,16 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
     );
   }
 
-  private actionsForSuccess(resource: T) {
+  protected actionsForSuccess(resource: T) {
     toastr.success('Solicitação processada com sucesso!');
-    this.router.navigateByUrl('categories', {skipLocationChange: true})
+    const baseComponentPath: string = this.route.snapshot.parent.url[0].path;
+    this.router.navigateByUrl(baseComponentPath, {skipLocationChange: true})
         .then(
-            () => this.router.navigate(['categories', resource.id, 'edit'])
+            () => this.router.navigate([baseComponentPath, resource.id, 'edit'])
         );
   }
 
-  private actionsForError(error: any) {
+  protected actionsForError(error: any) {
     toastr.error('Erro na solicitaçao!');
     console.error(error);
     this.submittingForm = false;
@@ -85,7 +85,7 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
     }
   }
 
-  private update(): void {
+  protected update(): void {
     const resource: T = this.resourceService.castObject(this.resourceForm.getRawValue());
 
     this.resourceService.update(resource)
@@ -95,7 +95,7 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
     );
   }
 
-  private setCurrentAction(): void {
+  protected setCurrentAction(): void {
     if (this.route.snapshot.url[0].path === 'new') {
       this.currentAction = 'new';
     } else {
@@ -103,15 +103,9 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
     }
   }
 
-  private buildTForm(): void {
-    this.resourceForm = this.formBuilder.group({
-      id: [null],
-      name: [null, [Validators.required, Validators.minLength(2)]],
-      description: [null]
-    });
-  }
+  protected abstract buildForm(): void;
 
-  private loadT(): void {
+  protected load(): void {
     if (this.currentAction === 'edit') {
       this.route.paramMap.pipe(
         switchMap(params => this.resourceService.getById(Number(params.get('id'))))
@@ -123,17 +117,24 @@ export class TFormComponent<T extends BaseResourceModel> implements OnInit, Afte
         (error) => alert('Ocorreu um erro no servidor')
       );
     } else {
-      this.resource = new T();
+      this.resource = this.resourceService.getNew();
     }
   }
 
-  private setPageTitle(): void {
+  protected setPageTitle(): void {
     if (this.currentAction === 'new') {
-      this.pageTitle = 'Cadastro de Nova Categoria';
+      this.pageTitle = this.creationPageTitle();
     } else {
-      const resourceName = this.resource ? (this.resource.name || '') : '';
-      this.pageTitle = 'Editando Categoria: ' + resourceName;
+      this.pageTitle = this.editionPageTitle();
     }
   }
+
+  protected creationPageTitle(): string {
+      return "Novo";
+  }
+
+  protected editionPageTitle(): string {
+    return "Edição";
+}
 
 }
